@@ -1,0 +1,1022 @@
+{
+  "info": {
+    "_postman_id": "wallet-api-complete",
+    "name": "Wallet API - Complete Tests",
+    "description": "Complete collection for testing Wallet API with Actuator endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080/wallet-api"
+    },
+    {
+      "key": "employee_token",
+      "value": ""
+    },
+    {
+      "key": "admin_token",
+      "value": ""
+    },
+    {
+      "key": "customer_token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success) {",
+                  "        pm.environment.set('admin_token', response.data.token);",
+                  "        console.log('Admin token saved');",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success) {",
+                  "        pm.environment.set('customer_token', response.data.token);",
+                  "        console.log('Customer token saved');",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"12345678901\",\n  \"password\": \"cust123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login Employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success) {",
+                  "        pm.environment.set('employee_token', response.data.token);",
+                  "        console.log('Employee token saved');",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"employee\",\n  \"password\": \"emp123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wallet",
+      "item": [
+        {
+          "name": "List Wallet Customer",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/wallets/customers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "wallets", "customers", "1"]
+            }
+          }
+        },
+        {
+          "name": "List Wallet Employee",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employee_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/wallets/customers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "wallets", "customers", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Specific Wallet",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/wallets/1/customers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "wallets", "1", "customers", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Wallet",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employee_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletName\": \"Test Wallet\",\n  \"currency\": \"TRY\",\n  \"activeForShopping\": true,\n  \"activeForWithdraw\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/wallets/customers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "wallets", "customers", "1"]
+            }
+          }
+        },
+        {
+          "name": "Make Deposit (Small - Approved)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 500,\n  \"walletId\": 1,\n  \"source\": \"TR123456789012345678901234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/wallets/deposit",
+              "host": ["{{base_url}}"],
+              "path": ["api", "wallets", "deposit"]
+            }
+          }
+        },
+        {
+          "name": "Make Deposit (Large - Pending)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 1500,\n  \"walletId\": 1,\n  \"source\": \"TR987654321098765432109876\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/wallets/deposit",
+              "host": ["{{base_url}}"],
+              "path": ["api", "wallets", "deposit"]
+            }
+          }
+        },
+        {
+          "name": "Make Withdrawal (Small - Approved)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 100,\n  \"walletId\": 1,\n  \"destination\": \"PAY12345\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/wallets/withdraw",
+              "host": ["{{base_url}}"],
+              "path": ["api", "wallets", "withdraw"]
+            }
+          }
+        },
+        {
+          "name": "Make Withdrawal (Large - Pending)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 1200,\n  \"walletId\": 1,\n  \"destination\": \"TR111222333444555666777888\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/wallets/withdraw",
+              "host": ["{{base_url}}"],
+              "path": ["api", "wallets", "withdraw"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "List Transactions for Wallet",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/transactions/wallets/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "wallets", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Specific Transaction",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/transactions/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "1"]
+            }
+          }
+        },
+        {
+          "name": "Approve Transaction",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employee_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transactionId\": 1,\n  \"status\": \"APPROVED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/transactions/approve",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Deny Transaction",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employee_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transactionId\": 2,\n  \"status\": \"DENIED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/transactions/approve",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "approve"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Actuator",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/health",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "Application Info",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/info",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "info"]
+            }
+          }
+        },
+        {
+          "name": "Metrics List",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/metrics",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "metrics"]
+            }
+          }
+        },
+        {
+          "name": "Prometheus Format",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/prometheus",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "prometheus"]
+            }
+          }
+        },
+        {
+          "name": "Thread Dump",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employee_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actuator/threaddump",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "threaddump"]
+            }
+          }
+        },
+        {
+          "name": "Environment Variables",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employee_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actuator/env",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "env"]
+            }
+          }
+        },
+        {
+          "name": "Configuration Properties",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employee_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actuator/configprops",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "configprops"]
+            }
+          }
+        },
+        {
+          "name": "Spring Beans",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employee_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actuator/beans",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "beans"]
+            }
+          }
+        },
+        {
+          "name": "Request Mappings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employee_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actuator/mappings",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "mappings"]
+            }
+          }
+        },
+        {
+          "name": "Heap Dump",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employee_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actuator/heapdump",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "heapdump"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Custom Metrics",
+      "item": [
+        {
+          "name": "Wallet Count",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/metrics/wallet.count",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "metrics", "wallet.count"]
+            }
+          }
+        },
+        {
+          "name": "Customer Count",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/metrics/customer.count",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "metrics", "customer.count"]
+            }
+          }
+        },
+        {
+          "name": "Transaction Count",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/metrics/transaction.count",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "metrics", "transaction.count"]
+            }
+          }
+        },
+        {
+          "name": "Deposit Transactions Counter",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/metrics/wallet.transactions.deposits",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "metrics", "wallet.transactions.deposits"]
+            }
+          }
+        },
+        {
+          "name": "Withdraw Transactions Counter",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/metrics/wallet.transactions.withdraws",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "metrics", "wallet.transactions.withdraws"]
+            }
+          }
+        },
+        {
+          "name": "Approved Transactions Counter",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/metrics/wallet.transactions.approved",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "metrics", "wallet.transactions.approved"]
+            }
+          }
+        },
+        {
+          "name": "Pending Transactions Counter",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/metrics/wallet.transactions.pending",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "metrics", "wallet.transactions.pending"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "JVM and System Metrics",
+      "item": [
+        {
+          "name": "JVM Memory Used",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/metrics/jvm.memory.used",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "metrics", "jvm.memory.used"]
+            }
+          }
+        },
+        {
+          "name": "JVM Memory Max",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/metrics/jvm.memory.max",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "metrics", "jvm.memory.max"]
+            }
+          }
+        },
+        {
+          "name": "System CPU Usage",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/metrics/system.cpu.usage",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "metrics", "system.cpu.usage"]
+            }
+          }
+        },
+        {
+          "name": "Process CPU Usage",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/metrics/process.cpu.usage",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "metrics", "process.cpu.usage"]
+            }
+          }
+        },
+        {
+          "name": "HTTP Server Requests",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/metrics/http.server.requests",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "metrics", "http.server.requests"]
+            }
+          }
+        },
+        {
+          "name": "JVM Threads",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/metrics/jvm.threads.live",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "metrics", "jvm.threads.live"]
+            }
+          }
+        },
+        {
+          "name": "JVM GC Pause",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/metrics/jvm.gc.pause",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "metrics", "jvm.gc.pause"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Security Tests",
+      "item": [
+        {
+          "name": "Test Unauthorized Access to Protected Endpoint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 401 Unauthorized', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/actuator/env",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "env"]
+            }
+          }
+        },
+        {
+          "name": "Test Customer Access to Employee Endpoint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 403 Forbidden', function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actuator/env",
+              "host": ["{{base_url}}"],
+              "path": ["actuator", "env"]
+            }
+          }
+        },
+        {
+          "name": "Test Customer Access to Own Wallets",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/wallets/customers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "wallets", "customers", "1"]
+            }
+          }
+        },
+        {
+          "name": "Test Customer Access to Another Customer's Wallets",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 403 Forbidden', function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/wallets/customers/2",
+              "host": ["{{base_url}}"],
+              "path": ["api", "wallets", "customers", "2"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Scenarios",
+      "item": [
+        {
+          "name": "Insufficient Balance Withdrawal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Should contain insufficient balance error', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.error).to.contain('INSUFFICIENT_BALANCE');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 99999,\n  \"walletId\": 1,\n  \"destination\": \"PAY12345\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/wallets/withdraw",
+              "host": ["{{base_url}}"],
+              "path": ["api", "wallets", "withdraw"]
+            }
+          }
+        },
+        {
+          "name": "Invalid Transaction ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Should contain transaction not found error', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.error).to.contain('TRANSACTION_NOT_FOUND');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/transactions/99999",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "99999"]
+            }
+          }
+        },
+        {
+          "name": "Invalid Wallet ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Should contain wallet not found error', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.error).to.contain('WALLET_NOT_FOUND');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 100,\n  \"walletId\": 99999,\n  \"source\": \"TR123456789012345678901234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/wallets/deposit",
+              "host": ["{{base_url}}"],
+              "path": ["api", "wallets", "deposit"]
+            }
+          }
+        },
+        {
+          "name": "Validation Error - Negative Amount",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Should contain validation error', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.error).to.contain('VALIDATION_ERROR');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": -100,\n  \"walletId\": 1,\n  \"source\": \"TR123456789012345678901234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/wallets/deposit",
+              "host": ["{{base_url}}"],
+              "path": ["api", "wallets", "deposit"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

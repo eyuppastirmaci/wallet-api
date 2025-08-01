@@ -45,8 +45,20 @@ public class SecurityConfig {
                 // Allow H2 console access
                 .requestMatchers("/h2-console/**").permitAll()
                 
-                // Allow health check endpoints
+                // Public actuator endpoints (accessible to everyone)
                 .requestMatchers("/actuator/health/**").permitAll()
+                .requestMatchers("/actuator/info").permitAll()
+                .requestMatchers("/actuator/metrics").permitAll()
+                .requestMatchers("/actuator/prometheus").permitAll()
+                
+                // Restricted actuator endpoints (only for employees)
+                .requestMatchers("/actuator/env").hasRole("EMPLOYEE")
+                .requestMatchers("/actuator/configprops").hasRole("EMPLOYEE")
+                .requestMatchers("/actuator/beans").hasRole("EMPLOYEE")
+                .requestMatchers("/actuator/mappings").hasRole("EMPLOYEE")
+                .requestMatchers("/actuator/threaddump").hasRole("EMPLOYEE")
+                .requestMatchers("/actuator/heapdump").hasRole("EMPLOYEE")
+                .requestMatchers("/actuator/**").hasRole("EMPLOYEE")
                 
                 // Require authentication for all other API endpoints
                 .requestMatchers("/wallet-api/api/**").authenticated()

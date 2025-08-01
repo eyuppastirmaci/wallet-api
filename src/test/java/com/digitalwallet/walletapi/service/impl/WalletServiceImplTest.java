@@ -1,5 +1,6 @@
 package com.digitalwallet.walletapi.service.impl;
 
+import com.digitalwallet.walletapi.dto.request.DepositRequest;
 import com.digitalwallet.walletapi.dto.request.WithdrawRequest;
 import com.digitalwallet.walletapi.entity.Customer;
 import com.digitalwallet.walletapi.entity.Transaction;
@@ -200,4 +201,65 @@ public class WalletServiceImplTest {
         // --- Verify ---
         verify(transactionRepository, never()).save(any(Transaction.class));
     }
+
+    /**
+     * Scenario: Deposited amount (500.00) is below {@code pendingThreshold}.
+     * Expected: deposit(...) *succeeds*,
+     *           saves an APPROVED {@link Transaction},
+     *           increases wallet balance and usableBalance by the amount.
+     */
+    @Test
+    void deposit_ShouldSucceedWithApprovedStatus_WhenAmountIsBelowThreshold() {
+        // --- Arrange ---
+        DepositRequest request = new DepositRequest();
+        request.setWalletId(1L);
+        request.setAmount(new BigDecimal("500.00"));
+        request.setSource("TR1234...");
+
+        when(walletRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(testWallet));
+        
+        // --- Act ---
+        walletService.deposit(request);
+        
+        // --- Assert ---
+        verify(transactionRepository).save(transactionCaptor.capture());
+        
+        Transaction savedTransaction = transactionCaptor.getValue();
+        assertThat(savedTransaction.getStatus()).isEqualTo(TransactionStatus.APPROVED);
+        assertThat(savedTransaction.getAmount()).isEqualByComparingTo("500.00");
+
+        assertThat(testWallet.getBalance()).isEqualByComparingTo("600.00"); // 100 + 500
+        assertThat(testWallet.getUsableBalance()).isEqualByComparingTo("600.00"); // 100 + 500
+    }
+
+    /**
+     * Scenario: Deposited amount (2000.00) is above {@code pendingThreshold}.
+     * Expected: deposit(...) *succeeds*,
+     *           saves a PENDING {@link Transaction},
+     *           increases only the wallet balance, leaving usableBalance unchanged.
+     */
+    @Test
+    void deposit_ShouldSucceedWithPendingStatus_WhenAmountIsAboveThreshold() {
+        // --- Arrange ---
+        DepositRequest request = new DepositRequest();
+        request.setWalletId(1L);
+        request.setAmount(new BigDecimal("2000.00"));
+        request.setSource("TR1234...");
+
+        when(walletRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(testWallet));
+
+        // --- Act ---
+        walletService.deposit(request);
+        
+        // --- Assert ---
+        verify(transactionRepository).save(transactionCaptor.capture());
+        
+        Transaction savedTransaction = transactionCaptor.getValue();
+        assertThat(savedTransaction.getStatus()).isEqualTo(TransactionStatus.PENDING);
+        assertThat(savedTransaction.getAmount()).isEqualByComparingTo("2000.00");
+        
+        assertThat(testWallet.getBalance()).isEqualByComparingTo("2100.00"); // 100 + 2000
+        assertThat(testWallet.getUsableBalance()).isEqualByComparingTo("100.00"); // The available balance should not change.
+    }
+
 }

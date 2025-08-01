@@ -1,0 +1,67 @@
+# Build artifacts
+target/
+*.jar
+*.war
+
+# IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+.apt_generated/
+.sts4-cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Git
+.git/
+.gitignore
+
+# Maven wrapper jar (we copy it explicitly in Dockerfile)
+.mvn/wrapper/maven-wrapper.jar
+
+# Logs
+*.log
+logs/
+spring.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Documentation (optional - remove if you want docs in container)
+*.md
+docs/
+
+# Docker files themselves
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Test files and coverage reports
+coverage/
+test-results/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Node modules (if any frontend assets)
+node_modules/
+
+# Application specific
+application-*.yml
+application-*.yaml
+application-*.properties

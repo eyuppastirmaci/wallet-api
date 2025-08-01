@@ -1,0 +1,39 @@
+services:
+  wallet-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: digital-wallet-api:latest
+    container_name: wallet-api-container
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8080
+      - SPRING_DATASOURCE_URL=jdbc:h2:mem:walletdb
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_H2_CONSOLE_ENABLED=true
+      - SPRING_H2_CONSOLE_PATH=/h2-console
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
+      - SPRING_JPA_SHOW_SQL=true
+      - WALLET_APP_JWT_SECRET=mySecretKey123456789012345678901234567890
+      - WALLET_APP_JWT_EXPIRATION_MS=86400000
+      - WALLET_TRANSACTION_PENDING_THRESHOLD=1000
+      - LOGGING_LEVEL_COM_DIGITALWALLET_WALLETAPI=DEBUG
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - wallet-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/wallet-api/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  wallet-network:
+    driver: bridge

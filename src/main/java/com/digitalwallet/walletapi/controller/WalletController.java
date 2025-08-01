@@ -55,7 +55,7 @@ public class WalletController {
      * @return ApiResponse with list of customer's wallets
      */
     @GetMapping("/customers/{customerId}")
-    @PreAuthorize("hasRole('EMPLOYEE') or (hasRole('CUSTOMER') and @customUserDetailsService.isOwner(authentication.principal.customerId, #customerId))")
+    @PreAuthorize("hasRole('EMPLOYEE') or @authService.isAccountOwner(#customerId)")
     public ResponseEntity<ApiResponse<List<WalletResponse>>> listWallets(
             @PathVariable Long customerId,
             @RequestParam(required = false) Currency currency) {
@@ -78,7 +78,7 @@ public class WalletController {
      * @return ApiResponse with wallet information
      */
     @GetMapping("/{walletId}/customers/{customerId}")
-    @PreAuthorize("hasRole('EMPLOYEE') or (hasRole('CUSTOMER') and @customUserDetailsService.isOwner(authentication.principal.customerId, #customerId))")
+    @PreAuthorize("hasRole('EMPLOYEE') or @authService.isAccountOwner(#customerId)")
     public ResponseEntity<ApiResponse<WalletResponse>> getWallet(
             @PathVariable Long walletId,
             @PathVariable Long customerId) {
@@ -97,7 +97,7 @@ public class WalletController {
      * @return ApiResponse confirming deposit operation
      */
     @PostMapping("/deposit")
-    @PreAuthorize("hasRole('EMPLOYEE') or (hasRole('CUSTOMER') and @walletService.isWalletOwner(#request.walletId, authentication.principal.customerId))")
+    @PreAuthorize("hasRole('EMPLOYEE') or @authService.isWalletOwner(#request.walletId)")
     public ResponseEntity<ApiResponse<String>> deposit(@Valid @RequestBody DepositRequest request) {
         walletService.deposit(request);
         return ResponseEntity.ok(ApiResponse.success("Deposit processed successfully", "Deposit completed"));
@@ -111,7 +111,7 @@ public class WalletController {
      * @return ApiResponse confirming withdraw operation
      */
     @PostMapping("/withdraw")
-    @PreAuthorize("hasRole('EMPLOYEE') or (hasRole('CUSTOMER') and @walletService.isWalletOwner(#request.walletId, authentication.principal.customerId))")
+    @PreAuthorize("hasRole('EMPLOYEE') or @authService.isWalletOwner(#request.walletId)")
     public ResponseEntity<ApiResponse<String>> withdraw(@Valid @RequestBody WithdrawRequest request) {
         walletService.withdraw(request);
         return ResponseEntity.ok(ApiResponse.success("Withdraw processed successfully", "Withdraw completed"));

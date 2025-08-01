@@ -71,14 +71,4 @@ public class CustomUserDetailsService implements UserDetailsService {
         
         throw new UsernameNotFoundException("User not found: " + username);
     }
-
-    /**
-     * Check if customer owns the given customer ID
-     */
-    public boolean isOwner(Long authCustomerId, Long targetCustomerId) {
-        if (authCustomerId == null || targetCustomerId == null) {
-            return false;
-        }
-        return authCustomerId.equals(targetCustomerId);
-    }
 }

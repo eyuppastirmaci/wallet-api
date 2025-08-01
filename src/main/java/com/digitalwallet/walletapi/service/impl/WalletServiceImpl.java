@@ -199,17 +199,4 @@ public class WalletServiceImpl implements WalletService {
         }
         return OppositePartyType.PAYMENT;
     }
-
-    /**
-     * Check if customer owns the wallet
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public boolean isWalletOwner(Long walletId, Long customerId) {
-        if (walletId == null || customerId == null) {
-            return false;
-        }
-        
-        return walletRepository.findByIdAndCustomerId(walletId, customerId).isPresent();
-    }
 }

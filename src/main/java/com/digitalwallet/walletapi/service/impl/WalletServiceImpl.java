@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -33,6 +34,9 @@ public class WalletServiceImpl implements WalletService {
     private final WalletRepository walletRepository;
     private final CustomerRepository customerRepository;
     private final TransactionRepository transactionRepository;
+
+    @Value("${wallet.transaction.pending-threshold}")
+    private BigDecimal pendingThreshold;
 
     /**
      * Create a new wallet for customer
@@ -99,7 +103,7 @@ public class WalletServiceImpl implements WalletService {
                         .orElseThrow(() -> new WalletNotFoundException(request.getWalletId()));
         
         // Determine transaction status based on amount
-        TransactionStatus status = request.getAmount().compareTo(new BigDecimal("1000")) > 0 
+        TransactionStatus status = request.getAmount().compareTo(pendingThreshold) > 0 
                 ? TransactionStatus.PENDING : TransactionStatus.APPROVED;
         
         // Create transaction record
@@ -158,7 +162,7 @@ public class WalletServiceImpl implements WalletService {
             throw new InsufficientBalanceException(request.getAmount(), wallet.getUsableBalance());
         }
         
-        TransactionStatus status = request.getAmount().compareTo(new BigDecimal("1000")) > 0 
+        TransactionStatus status = request.getAmount().compareTo(pendingThreshold) > 0 
                 ? TransactionStatus.PENDING : TransactionStatus.APPROVED;
         
         Transaction transaction = Transaction.builder()

@@ -1,4 +1,4 @@
-package com.digitalwallet.walletapi.config;
+package com.digitalwallet.walletapi.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

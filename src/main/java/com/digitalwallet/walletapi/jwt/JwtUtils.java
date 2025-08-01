@@ -1,4 +1,4 @@
-package com.digitalwallet.walletapi.config;
+package com.digitalwallet.walletapi.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

@@ -1,6 +1,6 @@
 package com.digitalwallet.walletapi.service.impl;
 
-import com.digitalwallet.walletapi.config.CustomUserDetails;
+import com.digitalwallet.walletapi.jwt.CustomUserDetails;
 import com.digitalwallet.walletapi.entity.Wallet;
 import com.digitalwallet.walletapi.repository.WalletRepository;
 import org.junit.jupiter.api.AfterEach;

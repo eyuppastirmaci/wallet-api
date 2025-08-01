@@ -1,4 +1,4 @@
-package com.digitalwallet.walletapi.config;
+package com.digitalwallet.walletapi.jwt;
 
 import com.digitalwallet.walletapi.entity.Customer;
 import com.digitalwallet.walletapi.entity.Employee;

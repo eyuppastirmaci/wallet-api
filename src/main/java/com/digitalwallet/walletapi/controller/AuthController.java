@@ -1,7 +1,7 @@
 package com.digitalwallet.walletapi.controller;
 
-import com.digitalwallet.walletapi.config.CustomUserDetails;
-import com.digitalwallet.walletapi.config.JwtUtils;
+import com.digitalwallet.walletapi.jwt.CustomUserDetails;
+import com.digitalwallet.walletapi.jwt.JwtUtils;
 import com.digitalwallet.walletapi.dto.request.LoginRequest;
 import com.digitalwallet.walletapi.dto.response.AuthResponse;
 import com.digitalwallet.walletapi.response.ApiResponse;

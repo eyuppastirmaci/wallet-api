@@ -1,4 +1,4 @@
-package com.digitalwallet.walletapi.config;
+package com.digitalwallet.walletapi.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

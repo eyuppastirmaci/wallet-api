@@ -38,4 +38,9 @@ public interface WalletService {
      * Make withdraw from wallet
      */
     void withdraw(WithdrawRequest request);
+
+    /**
+     * Check if customer owns the wallet
+     */
+    boolean isWalletOwner(Long walletId, Long customerId);
 }

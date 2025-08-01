@@ -36,9 +36,11 @@ public class Wallet {
     @Column(name = "active_for_withdraw", nullable = false)
     private Boolean activeForWithdraw;
 
+    @Builder.Default
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal balance = BigDecimal.ZERO;
 
+    @Builder.Default
     @Column(name = "usable_balance", nullable = false, precision = 19, scale = 2)
     private BigDecimal usableBalance = BigDecimal.ZERO;
 

@@ -9,6 +9,7 @@ import com.digitalwallet.walletapi.service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -22,11 +23,13 @@ public class TransactionController {
 
     /**
      * List all transactions for a specific wallet
+     * Employees can access any wallet, customers can only access their own wallets
      *
      * @param walletId ID of the wallet
      * @return ApiResponse with list of transactions
      */
     @GetMapping("/wallets/{walletId}")
+    @PreAuthorize("hasRole('EMPLOYEE') or (hasRole('CUSTOMER') and @walletService.isWalletOwnerByWalletId(#walletId, authentication.principal.customerId))")
     public ResponseEntity<ApiResponse<List<TransactionResponse>>> listTransactions(
             @PathVariable Long walletId) {
         
@@ -54,11 +57,13 @@ public class TransactionController {
 
     /**
      * Approve or deny a pending transaction
+     * Only employees can approve/deny transactions
      *
      * @param request ApproveTransactionRequest with transaction ID and status
      * @return ApiResponse confirming approval operation
      */
     @PostMapping("/approve")
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<ApiResponse<String>> approveTransaction(
             @Valid @RequestBody ApproveTransactionRequest request) {
         

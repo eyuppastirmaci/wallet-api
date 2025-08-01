@@ -5,6 +5,13 @@ import com.digitalwallet.walletapi.config.JwtUtils;
 import com.digitalwallet.walletapi.dto.request.LoginRequest;
 import com.digitalwallet.walletapi.dto.response.AuthResponse;
 import com.digitalwallet.walletapi.response.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,19 +28,44 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Authentication", description = "Authentication and user management endpoints")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
-    /**
-     * Authenticate user and return JWT token
-     *
-     * @param loginRequest LoginRequest with username and password
-     * @return ApiResponse with JWT token and user information
-     */
+    @Operation(
+        summary = "User Login",
+        description = "Authenticate user and return JWT token. Supports both employee and customer login.",
+        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Login credentials",
+            required = true,
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = LoginRequest.class)
+            )
+        )
+    )
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200",
+            description = "Login successful",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = AuthResponse.class)
+            )
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "401",
+            description = "Invalid credentials",
+            content = @Content(
+                mediaType = "application/json"
+            )
+        )
+    })
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponse>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<ApiResponse<AuthResponse>> authenticateUser(
+            @Valid @RequestBody LoginRequest loginRequest) {
         
         log.info("Login attempt for user: {}", loginRequest.getUsername());
         
@@ -67,14 +99,28 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("Login successful", authResponse));
     }
 
-    /**
-     * Get current user information
-     *
-     * @param authentication Current authentication
-     * @return ApiResponse with current user information
-     */
+    @Operation(
+        summary = "Get Current User Info",
+        description = "Get information about the currently authenticated user",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200",
+            description = "User information retrieved successfully",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = AuthResponse.class)
+            )
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized - Invalid or missing JWT token"
+        )
+    })
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<AuthResponse>> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<ApiResponse<AuthResponse>> getCurrentUser(
+            @Parameter(hidden = true) Authentication authentication) {
         
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()

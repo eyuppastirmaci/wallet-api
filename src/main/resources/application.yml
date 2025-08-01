@@ -159,3 +159,29 @@ wallet:
     pending-threshold: 1000
   security:
     enabled: true
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    try-it-out-enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+    filter: false
+    display-request-duration: true
+    display-operation-id: true
+    show-extensions: true
+    show-common-extensions: true
+  show-actuator: true
+  group-configs:
+    - group: 'wallet-api'
+      display-name: 'Wallet API'
+      paths-to-match: '/api/**'
+    - group: 'actuator'
+      display-name: 'Actuator Endpoints'  
+      paths-to-match: '/actuator/**'
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json

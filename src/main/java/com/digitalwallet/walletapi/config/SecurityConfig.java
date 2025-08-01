@@ -45,6 +45,15 @@ public class SecurityConfig {
                 // Allow H2 console access
                 .requestMatchers("/h2-console/**").permitAll()
                 
+                // Allow Swagger UI and API docs (public access for documentation)
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/swagger-ui.html").permitAll()
+                .requestMatchers("/api-docs/**").permitAll()
+                .requestMatchers("/api-docs.yaml").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
+                .requestMatchers("/swagger-resources/**").permitAll()
+                .requestMatchers("/webjars/**").permitAll()
+                
                 // Public actuator endpoints (accessible to everyone)
                 .requestMatchers("/actuator/health/**").permitAll()
                 .requestMatchers("/actuator/info").permitAll()

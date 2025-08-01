@@ -10,11 +10,9 @@ A robust REST API for managing digital wallets, enabling customers and employees
 - [Getting Started](#getting-started)
 - [API Documentation](#api-documentation)
 - [Security](#security)
-- [Database Schema](#database-schema)
 - [Testing](#testing)
 - [Monitoring](#monitoring)
-- [Docker Support](#docker-support)
-- [Contributing](#contributing)
+- [License](#license)
 
 ## Overview
 

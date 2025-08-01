@@ -26,6 +26,9 @@ public class Customer {
     @Column(nullable = false, unique = true, length = 11)
     private String tckn;
 
+    @Column(nullable = false)
+    private String password;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

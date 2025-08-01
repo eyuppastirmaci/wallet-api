@@ -18,19 +18,10 @@ import java.util.Optional;
 @Repository
 public interface WalletRepository extends JpaRepository<Wallet, Long> {
     
-    /**
-     * Find all wallets by customer ID
-     */
     List<Wallet> findByCustomerId(Long customerId);
     
-    /**
-     * Find wallets by customer ID and currency
-     */
     List<Wallet> findByCustomerIdAndCurrency(Long customerId, Currency currency);
     
-    /**
-     * Find wallet by ID and customer ID (for security check)
-     */
     Optional<Wallet> findByIdAndCustomerId(Long walletId, Long customerId);
     
     /**

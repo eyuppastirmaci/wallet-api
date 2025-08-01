@@ -12,19 +12,10 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     
-    /**
-     * Find all transactions by wallet ID ordered by creation date (newest first)
-     */
     List<Transaction> findByWalletIdOrderByCreatedAtDesc(Long walletId);
     
-    /**
-     * Find transactions by wallet ID and status
-     */
     List<Transaction> findByWalletIdAndStatus(Long walletId, TransactionStatus status);
     
-    /**
-     * Find transactions by wallet ID and type
-     */
     List<Transaction> findByWalletIdAndType(Long walletId, TransactionType type);
     
     /**

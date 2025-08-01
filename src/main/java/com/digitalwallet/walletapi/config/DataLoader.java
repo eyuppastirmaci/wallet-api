@@ -1,19 +1,24 @@
 package com.digitalwallet.walletapi.config;
 
 import com.digitalwallet.walletapi.entity.Customer;
+import com.digitalwallet.walletapi.entity.Employee;
 import com.digitalwallet.walletapi.entity.Transaction;
 import com.digitalwallet.walletapi.entity.Wallet;
 import com.digitalwallet.walletapi.enums.*;
 import com.digitalwallet.walletapi.repository.CustomerRepository;
+import com.digitalwallet.walletapi.repository.EmployeeRepository;
 import com.digitalwallet.walletapi.repository.TransactionRepository;
 import com.digitalwallet.walletapi.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 
 @Component
+@Profile("!prod")
 @RequiredArgsConstructor
 @Slf4j
 public class DataLoader implements CommandLineRunner {
@@ -21,6 +26,8 @@ public class DataLoader implements CommandLineRunner {
     private final CustomerRepository customerRepository;
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
+    private final EmployeeRepository employeeRepository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Load sample data on application startup
@@ -31,7 +38,8 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) {
         log.info("Loading sample data...");
         
-        if (customerRepository.count() == 0) {
+        if (customerRepository.count() == 0 && employeeRepository.count() == 0) {
+            log.info("No data found. Loading sample data...");
             loadSampleData();
             log.info("Sample data loaded successfully!");
         } else {
@@ -43,10 +51,28 @@ public class DataLoader implements CommandLineRunner {
      * Create sample customers, wallets and transactions
      */
     private void loadSampleData() {
+        // Create sample employees 
+        Employee admin = Employee.builder()
+                .username("admin")
+                .password(passwordEncoder.encode("admin123"))
+                .roles("ROLE_ADMIN,ROLE_EMPLOYEE")
+                .build();
+        employeeRepository.save(admin);
+
+        Employee employee = Employee.builder()
+                .username("employee")
+                .password(passwordEncoder.encode("emp123"))
+                .roles("ROLE_EMPLOYEE")
+                .build();
+        employeeRepository.save(employee);
+
+
         // Create sample customers
-        Customer customer1 = createCustomer("Ahmet", "Yılmaz", "12345678901");
-        Customer customer2 = createCustomer("Fatma", "Demir", "12345678902");
-        Customer customer3 = createCustomer("Mehmet", "Kaya", "12345678903");
+        String defaultCustomerPassword = passwordEncoder.encode("cust123");
+        Customer customer1 = createCustomer("Ahmet", "Yılmaz", "12345678901", defaultCustomerPassword);
+        Customer customer2 = createCustomer("Fatma", "Demir", "12345678902", defaultCustomerPassword);
+        Customer customer3 = createCustomer("Mehmet", "Kaya", "12345678903", defaultCustomerPassword);
+    
 
         // Create sample wallets
         Wallet wallet1 = createWallet(customer1, "Main Wallet", Currency.TRY, true, true, new BigDecimal("5000"));
@@ -102,11 +128,12 @@ public class DataLoader implements CommandLineRunner {
     /**
      * Create and save a customer
      */
-    private Customer createCustomer(String name, String surname, String tckn) {
+    private Customer createCustomer(String name, String surname, String tckn, String encodedPassword) {
         Customer customer = Customer.builder()
                 .name(name)
                 .surname(surname)
                 .tckn(tckn)
+                .password(encodedPassword)
                 .build();
         return customerRepository.save(customer);
     }

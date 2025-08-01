@@ -1,14 +1,17 @@
 package com.digitalwallet.walletapi.config;
 
 import com.digitalwallet.walletapi.entity.Customer;
+import com.digitalwallet.walletapi.entity.Employee;
 import com.digitalwallet.walletapi.repository.CustomerRepository;
+import com.digitalwallet.walletapi.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,57 +21,48 @@ import java.util.Optional;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final CustomerRepository customerRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final EmployeeRepository employeeRepository;
 
     /**
-     * Load user by username - supports both employees and customers
+     * Loads a user by their username. It first searches for an employee,
+     * and if not found, searches for a customer using their TCKN as the username.
+     *
+     * @param username The username (can be an employee's username or a customer's TCKN).
+     * @return UserDetails object for Spring Security.
+     * @throws UsernameNotFoundException if the user is not found in any table.
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.debug("Loading user: {}", username);
-        
-        // Handle employee users
-        if ("admin".equals(username)) {
-            return CustomUserDetails.createEmployee("admin", 
-                    passwordEncoder.encode("admin123"), List.of("ADMIN", "EMPLOYEE"));
+        log.debug("Attempting to load user by username: {}", username);
+
+        Optional<Employee> employeeOpt = employeeRepository.findByUsername(username);
+        if (employeeOpt.isPresent()) {
+            Employee employee = employeeOpt.get();
+            log.info("Employee user found: {}", username);
+            
+            List<String> roles = Arrays.asList(employee.getRoles().replace("ROLE_", "").split(","));
+            
+            return CustomUserDetails.createEmployee(
+                    employee.getUsername(),
+                    employee.getPassword(),
+                    roles
+            );
         }
-        
-        if ("employee".equals(username)) {
-            return CustomUserDetails.createEmployee("employee", 
-                    passwordEncoder.encode("emp123"), List.of("EMPLOYEE"));
-        }
-        
-        // Handle customer users by TCKN
+
         Optional<Customer> customerOpt = customerRepository.findByTckn(username);
         if (customerOpt.isPresent()) {
             Customer customer = customerOpt.get();
+            log.info("Customer user found: {}", username);
+            
             return CustomUserDetails.createCustomer(
-                    customer.getTckn(), 
-                    passwordEncoder.encode("cust123"), 
-                    List.of("CUSTOMER"), 
+                    customer.getTckn(),
+                    customer.getPassword(), 
+                    List.of("CUSTOMER"),   
                     customer.getId()
             );
         }
-        
-        // Handle customer users by customerX format (backwards compatibility)
-        if (username.startsWith("customer")) {
-            try {
-                Long customerId = Long.parseLong(username.substring(8));
-                Optional<Customer> custOpt = customerRepository.findById(customerId);
-                if (custOpt.isPresent()) {
-                    Customer customer = custOpt.get();
-                    return CustomUserDetails.createCustomer(
-                            username, 
-                            passwordEncoder.encode("cust123"), 
-                            List.of("CUSTOMER"), 
-                            customer.getId()
-                    );
-                }
-            } catch (NumberFormatException e) {
-                log.debug("Invalid customer username format: {}", username);
-            }
-        }
-        
-        throw new UsernameNotFoundException("User not found: " + username);
+
+        log.warn("User not found with username: {}", username);
+        throw new UsernameNotFoundException("User not found with username: " + username);
     }
 }

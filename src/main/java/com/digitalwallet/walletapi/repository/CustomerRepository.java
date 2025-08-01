@@ -8,13 +8,7 @@ import java.util.Optional;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
     
-    /**
-     * Find customer by TCKN (Turkish ID number)
-     */
     Optional<Customer> findByTckn(String tckn);
     
-    /**
-     * Check if customer exists by TCKN
-     */
     boolean existsByTckn(String tckn);
 }

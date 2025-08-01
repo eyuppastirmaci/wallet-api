@@ -58,7 +58,7 @@ The system supports multi-currency wallets (TRY, USD, EUR) with configurable per
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/eyuppastirmaci/wallet-api
    cd walletapi
    ```
 

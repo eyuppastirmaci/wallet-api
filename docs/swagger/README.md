@@ -4,6 +4,10 @@
 
 Interactive API documentation using Swagger UI for the Digital Wallet management system.
 
+<img width="1461" height="854" alt="actuator" src="https://github.com/user-attachments/assets/04019896-6598-4d60-ba60-64d3985a5cee" />
+
+<img width="1481" height="1048" alt="wallet-api" src="https://github.com/user-attachments/assets/e7910a1f-4f0e-4691-a276-8370175f357a" />
+
 ## Quick Start
 
 ### Access Points

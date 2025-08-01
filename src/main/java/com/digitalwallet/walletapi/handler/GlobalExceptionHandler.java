@@ -9,6 +9,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,6 +54,21 @@ public class GlobalExceptionHandler {
                 .build();
                 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    /**
+     * Handle authorization errors - 403 Forbidden
+     * Catches Spring Security's AccessDeniedException thrown by @PreAuthorize.
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAccessDeniedException(AccessDeniedException ex) {
+        log.warn("Access Denied: {}", ex.getMessage());
+        
+        ApiResponse<Object> response = ApiResponse.error(
+            "You do not have permission to access this resource.", 
+            "ACCESS_DENIED"
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     /**

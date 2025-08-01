@@ -1,6 +1,5 @@
 package com.digitalwallet.walletapi.entity;
 
-import com.digitalwallet.walletapi.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;

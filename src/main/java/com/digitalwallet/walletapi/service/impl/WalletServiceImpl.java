@@ -95,8 +95,8 @@ public class WalletServiceImpl implements WalletService {
     public void deposit(DepositRequest request) {
         log.info("Processing deposit: {} to wallet: {}", request.getAmount(), request.getWalletId());
         
-        Wallet wallet = walletRepository.findById(request.getWalletId())
-                .orElseThrow(() -> new WalletNotFoundException(request.getWalletId()));
+        Wallet wallet = walletRepository.findByIdForUpdate(request.getWalletId())
+                        .orElseThrow(() -> new WalletNotFoundException(request.getWalletId()));
         
         // Determine transaction status based on amount
         TransactionStatus status = request.getAmount().compareTo(new BigDecimal("1000")) > 0 
@@ -135,42 +135,49 @@ public class WalletServiceImpl implements WalletService {
     public void withdraw(WithdrawRequest request) {
         log.info("Processing withdraw: {} from wallet: {}", request.getAmount(), request.getWalletId());
         
-        Wallet wallet = walletRepository.findById(request.getWalletId())
+        Wallet wallet = walletRepository.findByIdForUpdate(request.getWalletId())
                 .orElseThrow(() -> new WalletNotFoundException(request.getWalletId()));
         
-        // Check wallet settings
-        if (!wallet.getActiveForWithdraw()) {
-            throw new WalletNotActiveException("withdraw");
+        // Determine the type of withdrawal to check the correct wallet setting.
+        OppositePartyType oppositePartyType = determineOppositePartyType(request.getDestination());
+
+        if (oppositePartyType == OppositePartyType.PAYMENT) {
+            // Shopping payment, check if the wallet is active for shopping.
+            if (!wallet.getActiveForShopping()) {
+                throw new WalletNotActiveException("shopping");
+            }
+        } else {
+            // Cash withdrawal, check if the wallet is active for withdrawals.
+            if (!wallet.getActiveForWithdraw()) {
+                throw new WalletNotActiveException("withdraw");
+            }
         }
         
-        // Check balance
+        // Ensure the wallet has sufficient usable balance for the transaction.
         if (wallet.getUsableBalance().compareTo(request.getAmount()) < 0) {
             throw new InsufficientBalanceException(request.getAmount(), wallet.getUsableBalance());
         }
         
-        // Determine transaction status based on amount
         TransactionStatus status = request.getAmount().compareTo(new BigDecimal("1000")) > 0 
                 ? TransactionStatus.PENDING : TransactionStatus.APPROVED;
         
-        // Create transaction record
         Transaction transaction = Transaction.builder()
                 .wallet(wallet)
                 .amount(request.getAmount())
                 .type(TransactionType.WITHDRAW)
-                .oppositePartyType(determineOppositePartyType(request.getDestination()))
+                .oppositePartyType(oppositePartyType)
                 .oppositeParty(request.getDestination())
                 .status(status)
                 .build();
         
         transactionRepository.save(transaction);
         
-        // Update wallet balances
         if (status == TransactionStatus.APPROVED) {
-            // Approved withdraws update both balance and usable balance
+            // Approved withdrawals are immediately deducted from both balance and usable balance.
             wallet.setBalance(wallet.getBalance().subtract(request.getAmount()));
             wallet.setUsableBalance(wallet.getUsableBalance().subtract(request.getAmount()));
         } else {
-            // Pending withdraws only update usable balance
+            // Pending withdrawals only block the funds by reducing the usable balance.
             wallet.setUsableBalance(wallet.getUsableBalance().subtract(request.getAmount()));
         }
         

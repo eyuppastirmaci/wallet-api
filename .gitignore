@@ -1,0 +1,69 @@
+###############################################################################
+# BUILD OUTPUT
+###############################################################################
+# Maven / Spring Boot
+target/
+.mvn/wrapper/maven-wrapper.jar
+*.jar
+*.war
+
+# Gradle
+.gradle/
+build/
+!**/src/**/build/
+
+###############################################################################
+# IDE & EDITOR FILES
+###############################################################################
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse / Spring Tool Suite
+.project
+.classpath
+.settings/
+.apt_generated/
+.factorypath/
+.sts4-cache/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Visual Studio Code
+.vscode/
+
+###############################################################################
+# RUNTIME / LOGS
+###############################################################################
+*.log
+*.out
+*.pid
+hs_err_pid*
+*.hprof
+spring.log
+
+###############################################################################
+# ENVIRONMENT & SECRETS
+###############################################################################
+.env
+.env.*.local
+application-*.yml
+application-*.yaml
+application-*.properties
+
+###############################################################################
+# OPERATING-SYSTEM TRASH
+###############################################################################
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
